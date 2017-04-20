@@ -15,7 +15,7 @@ class RoleSeeder extends Seeder
 
         DB::table('roles')->delete();
         DB::table('roles')->insert(array('code'=>'all', 'name'=>'All','created_at' => new DateTime,'updated_at' => new DateTime));
-        DB::table('roles')->insert(array('code'=>'admin', 'name'=>'Admin','created_at' => new DateTime,'updated_at' => new DateTime));
+        DB::table('roles')->insert(array('code'=>'Admin', 'name'=>'Admin','created_at' => new DateTime,'updated_at' => new DateTime));
         DB::table('roles')->insert(array('code'=>'profile', 'name'=>'Profile','created_at' => new DateTime,'updated_at' => new DateTime));
     }
 }

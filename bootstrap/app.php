@@ -96,6 +96,10 @@ $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
     require __DIR__.'/../routes/web.php';
 });
 
+// Para tener la configuracion
 $app->configure('db');
+
+//Para tener el route:list
+$app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
 
 return $app;
