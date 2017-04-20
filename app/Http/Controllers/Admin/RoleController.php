@@ -2,94 +2,77 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Models\Role;
 
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $roles = Role::all();
         return response()->json($roles);
     }
 
-    /**
-     * Get the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        $role = Role::find($id);
-        if ($role!=null) {
+        try {
+            $role = Role::findOrFail($id);
             return response()->json($role);
-        } else {
-            return response()->json(['status' => 'fail']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => [
+                    'message' => 'Role not found'
+                ]
+            ], 404);
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'code' => 'required',
-            'name' => 'required',
-            'description' => 'required'
-        ]);
-
-        $role = new Role();
-        $role->code = $request->code;
-        $role->name = $request->name;
-        $role->description = $request->description;
-        $role->save();
-        return response()->json(['status' => 'success']);
-
+        $this->validate($request, $this->rules(null));
+        $role = Role::create($request->all());
+        return response()->json($role);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
+    public function rules($id)
+    {
+        $update = $id ? ',' . $id : '';
+        return [
+            'code' => 'required|unique:roles,code' . $update . '|max:15',
+            'name' => 'required|unique:roles,name' . $update . '|max:30',
+        ];
+    }
+
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'code' => 'required',
-            'name' => 'required',
-            'description' => 'required'
-        ]);
-
-        $role = Role::find($id);
-        $role->code = $request->code;
-        $role->name = $request->name;
-        $role->description = $request->description;
-        $role->save();
-        return response()->json(['status' => 'success']);
+        try {
+            $this->validate($request, $this->rules($id));
+            $role = Role::findOrFail($id);
+            $role->fill($request->all());
+            $role->save();
+            return response()->json($role);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => [
+                    'message' => 'Role not found'
+                ]
+            ], 404);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        if (Role::destroy($id)) {
+        try {
+            $role = Role::findOrFail($id);
+            $role->delete();
             return response()->json(['status' => 'success']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => [
+                    'message' => 'Role not found'
+                ]
+            ], 404);
         }
     }
 }
