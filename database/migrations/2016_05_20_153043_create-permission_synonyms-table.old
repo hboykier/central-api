@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreatePermissionSynonymsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('permission_synonyms', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('permission_id');
+            $table->string('synonym',  Config::get('db.textMedium'))->unique();
+            $table->foreign('permission_id')->references('id')->on('permissions');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('permission_synonyms');
+    }
+}
