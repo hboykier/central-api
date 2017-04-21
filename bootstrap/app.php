@@ -101,5 +101,6 @@ $app->configure('db');
 
 //Para tener el route:list
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
+$app->register(Wn\Generators\CommandsServiceProvider::class);
 
 return $app;
